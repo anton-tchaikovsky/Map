@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Map</string>
+    <string name="cancel">Отмена</string>
+    <string name="resume">Продолжить</string>
+    <string name="access_gps">Доступ к геолокации</string>
+    <string name="access_gps_dialog_rationale">Доступ к геолокации необходим для отображения вашего текущего местоположения</string>
+    <string name="access_gps_dialog_open_app_settings">Для возможности отображения вашего текущего местоположения необходимо разрешить доступ к геолокации в настройках приложения. Перейти в настройки?</string>
+    <string name="access_gps_never_ask_again">В дальнейшем для возможности отображения вашего текущего местоположения необходимо будет разрешить доступ к геолокации в настройках приложения.</string>
 </resources>
