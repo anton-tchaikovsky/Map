@@ -1,7 +1,7 @@
 package com.gb.map.presentation
 
 import com.gb.map.repository.LocationRepository
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,11 +11,7 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     private var mapView: MapContract.MapView? = null
 
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main
-    + CoroutineExceptionHandler { _, _ ->
-        mapView?.showMarker(locationRepository.defaultLocation)
-    })
-
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun attach(mapView: MapContract.MapView) {
         this.mapView = mapView
@@ -26,9 +22,13 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
     }
 
     override fun onPermissionLocationGrande() {
-        coroutineScope.launch {
-            mapView?.showMarker(locationRepository.getLocation())
-        }
+        val latLng = locationRepository.getLatLng()
+        if (latLng!=null)
+            coroutineScope.launch {
+                mapView?.showMarker(locationRepository.getLocationDto(latLng))
+            }
+        else
+            mapView?.showMarker(locationRepository.defaultLocation)
     }
 
     override fun onPermissionLocationDenied() {
@@ -37,5 +37,11 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     override fun onMapReading() {
         mapView?.checkPermissionLocation()
+    }
+
+    override fun onAddMarker(latLng: LatLng) {
+        coroutineScope.launch {
+            mapView?.showMarker(locationRepository.getLocationDto(latLng), false)
+        }
     }
 }

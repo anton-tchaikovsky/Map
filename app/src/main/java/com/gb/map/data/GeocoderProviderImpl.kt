@@ -3,12 +3,12 @@ package com.gb.map.data
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
+import com.google.android.gms.maps.model.LatLng
 
 class GeocoderProviderImpl(context: Context): GeocoderProvider {
     private val geoCoder = Geocoder(context)
     @Suppress("DEPRECATION")
-    override suspend fun getFromLocation(location: Location, maxResult: Int): MutableList<Address>? =
-        geoCoder.getFromLocation(location.latitude, location.longitude, maxResult)
+    override suspend fun getFromLocation(latLng: LatLng, maxResult: Int): MutableList<Address>? =
+        geoCoder.getFromLocation(latLng.latitude, latLng.longitude, maxResult)
 
 }

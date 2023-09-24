@@ -1,10 +1,10 @@
 package com.gb.map.repository
 
-import android.location.Location
 import com.gb.map.data.GeocoderProvider
 import com.gb.map.data.LocationDto
 import com.gb.map.data.LocationProvider
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -16,21 +16,24 @@ class LocationRepositoryImpl(
     override val defaultLocation: LocationDto
         get() = LocationDto(DEFAULT_LOCATION, DEFAULT_CITY)
 
-    override suspend fun getLocation(): LocationDto {
+    override fun getLatLng(): LatLng? {
         val location = locationProvider.getLocation()
         return if (location != null)
-            LocationDto(LatLng(location.latitude, location.longitude), getLocationName(location))
-        else LocationDto(DEFAULT_LOCATION, DEFAULT_CITY)
+            LatLng(location.latitude, location.longitude)
+        else null
     }
 
-    private suspend fun getLocationName(location: Location): String {
+    override suspend fun getLocationDto(latLng: LatLng): LocationDto {
         var locationName = ""
-        withContext(Dispatchers.IO){
-            geocoderProvider.getFromLocation(location, MAX_RESULT)?.get(0)?.let {
+        return withContext(Dispatchers.IO
+                + CoroutineExceptionHandler { _, _ ->
+            LocationDto(latLng, locationName)
+        }) {
+            geocoderProvider.getFromLocation(latLng, MAX_RESULT)?.get(0)?.let {
                 locationName = it.getAddressLine(0)
             }
+            LocationDto(latLng, locationName)
         }
-        return locationName
     }
 
     companion object {

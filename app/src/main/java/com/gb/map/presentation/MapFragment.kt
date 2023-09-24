@@ -18,6 +18,9 @@ class MapFragment : BasePermissionLocationFragment() {
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
         mapPresenter.onMapReading()
+        map.setOnMapLongClickListener {
+            mapPresenter.onAddMarker(it)
+        }
     }
 
     private lateinit var map: GoogleMap
@@ -40,10 +43,11 @@ class MapFragment : BasePermissionLocationFragment() {
         mapFragment?.getMapAsync(callback)
     }
 
-    override fun showMarker(location: LocationDto) {
+    override fun showMarker(locationDto: LocationDto, isMoveCamera: Boolean) {
         map.run{
-            addMarker(MarkerOptions().position(location.latLng).title(location.name))
-            moveCamera(CameraUpdateFactory.newLatLng(location.latLng))
+            addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
+            if (isMoveCamera)
+                moveCamera(CameraUpdateFactory.newLatLng(locationDto.latLng))
         }
     }
 

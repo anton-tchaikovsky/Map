@@ -1,8 +1,8 @@
 package com.gb.map.data
 
 import android.location.Address
-import android.location.Location
+import com.google.android.gms.maps.model.LatLng
 
 interface GeocoderProvider {
-    suspend fun getFromLocation(location: Location, maxResult: Int): MutableList<Address>?
+    suspend fun getFromLocation(latLng: LatLng, maxResult: Int): MutableList<Address>?
 }
