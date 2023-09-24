@@ -12,11 +12,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gb.map.R
-import com.gb.map.data.GeocoderProviderImpl
-import com.gb.map.data.LocationProviderImpl
-import com.gb.map.repository.LocationRepositoryImpl
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import org.koin.core.scope.Scope
 
-abstract class BasePermissionLocationFragment : Fragment(), MapContract.MapView {
+abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponent,  MapContract.MapView {
+
+    override val scope: Scope by fragmentScope()
+
+    protected val mapPresenter: MapContract.MapPresenter by inject()
 
     private val requestPermissionsLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isPermission ->
@@ -41,8 +46,6 @@ abstract class BasePermissionLocationFragment : Fragment(), MapContract.MapView 
             }
         }
 
-    protected lateinit var mapPresenter: MapContract.MapPresenter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         requireActivity()
             .onBackPressedDispatcher
@@ -51,12 +54,6 @@ abstract class BasePermissionLocationFragment : Fragment(), MapContract.MapView 
                     requireActivity().finish()
                 }
             })
-        mapPresenter = MapPresenterImpl(
-            LocationRepositoryImpl(
-                LocationProviderImpl(requireContext()),
-                GeocoderProviderImpl(requireContext())
-            )
-        )
         mapPresenter.attach(this)
         super.onCreate(savedInstanceState)
     }
