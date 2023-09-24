@@ -12,14 +12,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gb.map.R
+import com.gb.map.data.GeocoderProviderImpl
+import com.gb.map.data.LocationProviderImpl
+import com.gb.map.repository.LocationRepositoryImpl
 
-abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
+abstract class BasePermissionLocationFragment : Fragment(), MapContract.MapView {
 
     private val requestPermissionsLauncher: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()){ isPermission ->
-            if(isPermission)
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isPermission ->
+            if (isPermission)
                 mapPresenter.onPermissionLocationGrande()
-            else{
+            else {
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) // срабатывает много раз после отказа с “Never ask again” (после Rationale)
                     createAlertDialogOpenAppSettings()
                 else
@@ -28,10 +31,10 @@ abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
         }
 
     private val requestPermissionsLauncherRationale: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()){ isPermission ->
-            if(isPermission)
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isPermission ->
+            if (isPermission)
                 mapPresenter.onPermissionLocationGrande()
-            else{
+            else {
                 mapPresenter.onPermissionLocationDenied()
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) // срабатывает один раз при отказе с “Never ask again” (при Rationale)
                     createAlertDialogNeverAskAgain()
@@ -48,7 +51,12 @@ abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
                     requireActivity().finish()
                 }
             })
-        mapPresenter = MapPresenterImpl()
+        mapPresenter = MapPresenterImpl(
+            LocationRepositoryImpl(
+                LocationProviderImpl(requireContext()),
+                GeocoderProviderImpl(requireContext())
+            )
+        )
         mapPresenter.attach(this)
         super.onCreate(savedInstanceState)
     }
@@ -58,7 +66,7 @@ abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
         super.onDestroyView()
     }
 
-    override fun checkPermissionLocation(){
+    override fun checkPermissionLocation() {
         // проверка, есть ли разрешение на чтение локации
         when {
             ContextCompat.checkSelfPermission(
@@ -99,7 +107,7 @@ abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
             .show()
     }
 
-    private fun createAlertDialogNeverAskAgain(){
+    private fun createAlertDialogNeverAskAgain() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.access_gps))
             .setMessage(getString(R.string.access_gps_never_ask_again))
@@ -110,7 +118,7 @@ abstract class BasePermissionLocationFragment: Fragment(), MapContract.MapView {
             .show()
     }
 
-    private fun openAppSetting(){
+    private fun openAppSetting() {
         startActivity(Intent().apply {
             action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
             data = Uri.parse("package:" + context?.packageName)

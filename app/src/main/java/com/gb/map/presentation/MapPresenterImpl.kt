@@ -1,15 +1,24 @@
 package com.gb.map.presentation
 
-import android.util.Log
+import com.gb.map.repository.LocationRepository
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class MapPresenterImpl: MapContract.MapPresenter {
+class MapPresenterImpl(private val locationRepository: LocationRepository) :
+    MapContract.MapPresenter {
 
     private var mapView: MapContract.MapView? = null
 
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main
+    + CoroutineExceptionHandler { _, _ ->
+        mapView?.showMarker(locationRepository.defaultLocation)
+    })
+
+
     override fun attach(mapView: MapContract.MapView) {
-        this.mapView = mapView.also {
-            it.checkPermissionLocation()
-        }
+        this.mapView = mapView
     }
 
     override fun detach() {
@@ -17,10 +26,16 @@ class MapPresenterImpl: MapContract.MapPresenter {
     }
 
     override fun onPermissionLocationGrande() {
-        Log.d("@@@", "grande")
+        coroutineScope.launch {
+            mapView?.showMarker(locationRepository.getLocation())
+        }
     }
 
     override fun onPermissionLocationDenied() {
-        Log.d("@@@", "denied")
+        mapView?.showMarker(locationRepository.defaultLocation)
+    }
+
+    override fun onMapReading() {
+        mapView?.checkPermissionLocation()
     }
 }
