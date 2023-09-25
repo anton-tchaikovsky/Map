@@ -1,7 +1,9 @@
 package com.gb.map.presentation
 
+import com.gb.map.data.LocationDto
 import com.gb.map.repository.LocationRepository
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,10 +13,18 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     private var mapView: MapContract.MapView? = null
 
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main
+    + CoroutineExceptionHandler { _, throwable ->
+        errorHandler(throwable)
+    })
 
     override fun attach(mapView: MapContract.MapView) {
         this.mapView = mapView
+        coroutineScope.launch {
+            locationRepository.getLocations().forEach {
+                this@MapPresenterImpl.mapView?.showMarker(it, false)
+            }
+        }
     }
 
     override fun detach() {
@@ -22,10 +32,10 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
     }
 
     override fun onPermissionLocationGrande() {
-        val latLng = locationRepository.getLatLng()
+        val latLng = locationRepository.getCurrentLatLng()
         if (latLng!=null)
             coroutineScope.launch {
-                mapView?.showMarker(locationRepository.getLocationDto(latLng))
+                mapView?.showMarker(locationRepository.getLocation(latLng))
             }
         else
             mapView?.showMarker(locationRepository.defaultLocation)
@@ -41,7 +51,21 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     override fun onAddMarker(latLng: LatLng) {
         coroutineScope.launch {
-            mapView?.showMarker(locationRepository.getLocationDto(latLng), false)
+            mapView?.showMarker(locationRepository.getLocation(latLng).also { saveLocation(it) }, false)
         }
     }
+
+    private suspend fun saveLocation(locationDto: LocationDto){
+        locationRepository.insertLocation(locationDto)
+    }
+
+    private fun errorHandler(error: Throwable) {
+        mapView?.showError(error.message?: UNKNOWN_ERROR)
+    }
+
+
+    companion object{
+        private const val UNKNOWN_ERROR = "Unknown error"
+    }
+
 }

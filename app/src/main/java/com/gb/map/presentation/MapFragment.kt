@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.gb.map.R
 import com.gb.map.data.LocationDto
 import com.gb.map.databinding.FragmentMapsBinding
@@ -43,13 +44,18 @@ class MapFragment : BasePermissionLocationFragment() {
         mapFragment?.getMapAsync(callback)
     }
 
-    override fun showMarker(locationDto: LocationDto, isMoveCamera: Boolean) {
-        map.run{
-            addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
-            if (isMoveCamera)
+    override fun showMarker(locationDto: LocationDto, isCurrentLocation: Boolean) {
+        map.run {
+            if (isCurrentLocation) {
+                addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
                 moveCamera(CameraUpdateFactory.newLatLng(locationDto.latLng))
+            } else
+                addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
         }
     }
+
+    override fun showError(message: String) =
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
 
     override fun onDestroyView() {
         _binding = null

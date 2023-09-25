@@ -6,7 +6,15 @@ import com.google.android.gms.maps.model.LatLng
 interface LocationRepository {
    val defaultLocation: LocationDto
 
-   fun getLatLng(): LatLng?
+   fun getCurrentLatLng(): LatLng?
 
-   suspend fun getLocationDto(latLng: LatLng): LocationDto
+   suspend fun getLocation(latLng: LatLng): LocationDto
+
+   suspend fun getLocations(): List<LocationDto>
+
+   suspend fun insertLocation(locationDto: LocationDto): Long
+
+   suspend fun updateLocation(locationDto: LocationDto)
+
+   suspend fun deleteLocation(locationDto: LocationDto)
 }

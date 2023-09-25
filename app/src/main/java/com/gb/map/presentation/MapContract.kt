@@ -8,7 +8,9 @@ interface MapContract {
     interface MapView{
         fun checkPermissionLocation()
 
-        fun showMarker(locationDto: LocationDto, isMoveCamera: Boolean = true)
+        fun showMarker(locationDto: LocationDto, isCurrentLocation: Boolean = true)
+
+        fun showError(message: String)
     }
 
     interface MapPresenter{
