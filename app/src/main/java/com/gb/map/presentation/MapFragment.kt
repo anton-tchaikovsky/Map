@@ -12,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MapFragment : BasePermissionLocationFragment() {
@@ -50,7 +51,8 @@ class MapFragment : BasePermissionLocationFragment() {
                 addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
                 moveCamera(CameraUpdateFactory.newLatLng(locationDto.latLng))
             } else
-                addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name))
+                addMarker(MarkerOptions().position(locationDto.latLng).title(locationDto.name).
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
         }
     }
 

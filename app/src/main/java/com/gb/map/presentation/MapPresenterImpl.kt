@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class MapPresenterImpl(private val locationRepository: LocationRepository) :
@@ -14,7 +15,8 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
     private var mapView: MapContract.MapView? = null
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main
-    + CoroutineExceptionHandler { _, throwable ->
+            + SupervisorJob()
+            + CoroutineExceptionHandler { _, throwable ->
         errorHandler(throwable)
     })
 
@@ -33,7 +35,7 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     override fun onPermissionLocationGrande() {
         val latLng = locationRepository.getCurrentLatLng()
-        if (latLng!=null)
+        if (latLng != null)
             coroutineScope.launch {
                 mapView?.showMarker(locationRepository.getLocation(latLng))
             }
@@ -51,20 +53,23 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     override fun onAddMarker(latLng: LatLng) {
         coroutineScope.launch {
-            mapView?.showMarker(locationRepository.getLocation(latLng).also { saveLocation(it) }, false)
+            mapView?.showMarker(
+                locationRepository.getLocation(latLng).also { saveLocation(it) },
+                false
+            )
         }
     }
 
-    private suspend fun saveLocation(locationDto: LocationDto){
+    private suspend fun saveLocation(locationDto: LocationDto) {
         locationRepository.insertLocation(locationDto)
     }
 
     private fun errorHandler(error: Throwable) {
-        mapView?.showError(error.message?: UNKNOWN_ERROR)
+        mapView?.showError(error.message ?: UNKNOWN_ERROR)
     }
 
 
-    companion object{
+    companion object {
         private const val UNKNOWN_ERROR = "Unknown error"
     }
 
