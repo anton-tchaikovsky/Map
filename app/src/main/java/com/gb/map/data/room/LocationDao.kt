@@ -16,7 +16,7 @@ interface LocationDao {
     suspend fun insertLocation(locationEntity: LocationEntity): Long
 
     @Update
-    suspend fun updateLocation(locationEntity: LocationEntity)
+    suspend fun updateLocation(locationEntityList: List<LocationEntity>)
 
     @Delete
     suspend fun deleteLocation(locationEntity: LocationEntity)

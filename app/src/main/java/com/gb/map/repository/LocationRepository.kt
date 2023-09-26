@@ -14,7 +14,7 @@ interface LocationRepository {
 
    suspend fun insertLocation(locationDto: LocationDto): Long
 
-   suspend fun updateLocation(locationDto: LocationDto)
+   suspend fun updateLocation(locationDtoList: List<LocationDto>)
 
    suspend fun deleteLocation(locationDto: LocationDto)
 }

@@ -1,4 +1,4 @@
-package com.gb.map.presentation
+package com.gb.map.presentation.map
 
 import com.gb.map.data.LocationDto
 import com.gb.map.repository.LocationRepository
@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class MapPresenterImpl(private val locationRepository: LocationRepository) :
@@ -30,6 +31,7 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
     }
 
     override fun detach() {
+        coroutineScope.coroutineContext.cancel()
         mapView = null
     }
 
@@ -60,6 +62,10 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
         }
     }
 
+    override fun onClickOpenLocationsList() {
+        mapView?.openLocationsList()
+    }
+
     private suspend fun saveLocation(locationDto: LocationDto) {
         locationRepository.insertLocation(locationDto)
     }
@@ -68,9 +74,7 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
         mapView?.showError(error.message ?: UNKNOWN_ERROR)
     }
 
-
     companion object {
         private const val UNKNOWN_ERROR = "Unknown error"
     }
-
 }

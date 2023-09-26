@@ -1,4 +1,4 @@
-package com.gb.map.presentation
+package com.gb.map.presentation.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.gb.map.R
 import com.gb.map.data.LocationDto
 import com.gb.map.databinding.FragmentMapsBinding
+import com.gb.map.presentation.locationsList.LocationsListFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -43,6 +44,7 @@ class MapFragment : BasePermissionLocationFragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+        binding.openLocationsListFab.setOnClickListener { mapPresenter.onClickOpenLocationsList() }
     }
 
     override fun showMarker(locationDto: LocationDto, isCurrentLocation: Boolean) {
@@ -58,6 +60,13 @@ class MapFragment : BasePermissionLocationFragment() {
 
     override fun showError(message: String) =
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+
+    override fun openLocationsList() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.container, LocationsListFragment.newInstance())
+            .addToBackStack("")
+            .commitAllowingStateLoss()
+    }
 
     override fun onDestroyView() {
         _binding = null

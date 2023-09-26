@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.util.Log
 import androidx.core.app.ActivityCompat
 
 class LocationProviderImpl(private val context: Context) : LocationProvider {
@@ -23,11 +22,12 @@ class LocationProviderImpl(private val context: Context) : LocationProvider {
         }
 
         override fun onProviderDisabled(provider: String) {
-            Log.d ("@@@", "onProviderDisabledGps")
         }
 
         override fun onProviderEnabled(provider: String) {
-            Log.d ("@@@", "onProviderEnabledNetwork")
+        }
+
+        override fun onLocationChanged(locations: MutableList<Location>) {
         }
     }
 
@@ -36,11 +36,12 @@ class LocationProviderImpl(private val context: Context) : LocationProvider {
             locationByNetwork= location
         }
         override fun onProviderDisabled(provider: String) {
-            Log.d ("@@@", "onProviderDisabledNetwork")
         }
 
         override fun onProviderEnabled(provider: String) {
-            Log.d ("@@@", "onProviderEnabledNetwork")
+        }
+
+        override fun onLocationChanged(locations: MutableList<Location>) {
         }
     }
 

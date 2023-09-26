@@ -10,9 +10,14 @@ import com.gb.map.data.data_source.LocalDataSourceImpl
 import com.gb.map.data.mapper.LocationMapper
 import com.gb.map.data.mapper.LocationMapperImpl
 import com.gb.map.data.room.MapDatabase
-import com.gb.map.presentation.MapContract
-import com.gb.map.presentation.MapFragment
-import com.gb.map.presentation.MapPresenterImpl
+import com.gb.map.presentation.locationsList.LocationsListContract
+import com.gb.map.presentation.locationsList.LocationsListFragment
+import com.gb.map.presentation.locationsList.LocationsListPresenterImpl
+import com.gb.map.presentation.locationsList.recycler_view.ItemTouchHelperCallback
+import com.gb.map.presentation.locationsList.recycler_view.LocationsListAdapter
+import com.gb.map.presentation.map.MapContract
+import com.gb.map.presentation.map.MapFragment
+import com.gb.map.presentation.map.MapPresenterImpl
 import com.gb.map.repository.LocationRepository
 import com.gb.map.repository.LocationRepositoryImpl
 import org.koin.android.ext.koin.androidApplication
@@ -37,19 +42,32 @@ val applicationModule = module {
 
     single {
         Room.databaseBuilder(
-            androidApplication(),
-            MapDatabase::class.java,
-            "map_database"
-        )
-            .build()
+            androidApplication(), MapDatabase::class.java, "map_database"
+        ).build()
     }
 
-    single <LocalDataSource> { LocalDataSourceImpl(mapDatabase = get())}
+    single<LocalDataSource> { LocalDataSourceImpl(mapDatabase = get()) }
 
 }
 
 val activityModule = module {
     scope(named<MapFragment>()) {
         scoped<MapContract.MapPresenter> { MapPresenterImpl(locationRepository = get()) }
+    }
+
+    scope(named<LocationsListFragment>()) {
+        scoped<LocationsListContract.LocationsListPresenter> {
+            LocationsListPresenterImpl(
+                locationRepository = get()
+            )
+        }
+        scoped { (nameChangedClickListener: (String, Long) -> Unit, annotationChangedClickListener: (String, Long) -> Unit, removeLocationClickListener: (Long) -> Unit) ->
+            LocationsListAdapter(
+                nameChangedClickListener,
+                annotationChangedClickListener,
+                removeLocationClickListener
+            )
+        }
+        scoped {ItemTouchHelperCallback(adapter = get())}
     }
 }

@@ -1,4 +1,4 @@
-package com.gb.map.presentation
+package com.gb.map.presentation.map
 
 import android.Manifest
 import android.app.AlertDialog
@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,9 +18,10 @@ import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 import org.koin.core.scope.Scope
 
-abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponent,  MapContract.MapView {
+abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponent,
+    MapContract.MapView {
 
-    override val scope: Scope by fragmentScope()
+    final override val scope: Scope by fragmentScope()
 
     protected val mapPresenter: MapContract.MapPresenter by inject()
 
@@ -54,8 +56,13 @@ abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponen
                     requireActivity().finish()
                 }
             })
-        mapPresenter.attach(this)
+
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mapPresenter.attach(this)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {

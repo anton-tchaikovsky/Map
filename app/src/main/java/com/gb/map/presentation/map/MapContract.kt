@@ -1,4 +1,4 @@
-package com.gb.map.presentation
+package com.gb.map.presentation.map
 
 import com.gb.map.data.LocationDto
 import com.google.android.gms.maps.model.LatLng
@@ -11,6 +11,8 @@ interface MapContract {
         fun showMarker(locationDto: LocationDto, isCurrentLocation: Boolean = true)
 
         fun showError(message: String)
+
+        fun openLocationsList()
     }
 
     interface MapPresenter{
@@ -25,5 +27,7 @@ interface MapContract {
         fun onMapReading ()
 
         fun onAddMarker(latLng: LatLng)
+
+        fun onClickOpenLocationsList()
     }
 }

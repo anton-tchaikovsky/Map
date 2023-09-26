@@ -37,25 +37,27 @@ class LocationRepositoryImpl(
     }
 
     override suspend fun getLocations(): List<LocationDto> =
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             localDataSource.getLocations().map {
                 locationMapper.mapToDto(it)
             }
         }
 
     override suspend fun insertLocation(locationDto: LocationDto): Long =
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             localDataSource.insertLocation(locationMapper.mapToDatabase(locationDto))
         }
 
 
-    override suspend fun updateLocation(locationDto: LocationDto) =
-        withContext(Dispatchers.IO){
-            localDataSource.updateLocation(locationMapper.mapToDatabase(locationDto))
+    override suspend fun updateLocation(locationDtoList: List<LocationDto>) =
+        withContext(Dispatchers.IO) {
+            localDataSource.updateLocation(locationDtoList.map {
+                locationMapper.mapToDatabase(it)
+            })
         }
 
     override suspend fun deleteLocation(locationDto: LocationDto) =
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             localDataSource.deleteLocation(locationMapper.mapToDatabase(locationDto))
         }
 

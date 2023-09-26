@@ -7,7 +7,7 @@ interface LocalDataSource {
 
     suspend fun insertLocation(locationEntity: LocationEntity): Long
 
-    suspend fun updateLocation(locationEntity: LocationEntity)
+    suspend fun updateLocation(locationEntityList: List<LocationEntity>)
 
     suspend fun deleteLocation(locationEntity: LocationEntity)
 }

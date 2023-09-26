@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.gb.map.R
 import com.gb.map.databinding.ActivityMainBinding
+import com.gb.map.presentation.map.MapFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +17,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null)
             supportFragmentManager.apply {
                 beginTransaction()
-                    .add(R.id.container, MapFragment())
-                    .addToBackStack("")
+                    .replace(R.id.container, MapFragment())
                     .commitAllowingStateLoss()
             }
     }
