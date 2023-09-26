@@ -20,6 +20,7 @@ class MapFragment : BasePermissionLocationFragment() {
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
+        mapPresenter.attach(this@MapFragment)
         mapPresenter.onMapReading()
         map.setOnMapLongClickListener {
             mapPresenter.onAddMarker(it)
@@ -68,9 +69,13 @@ class MapFragment : BasePermissionLocationFragment() {
             .commitAllowingStateLoss()
     }
 
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
+    override fun clearMap() {
+        map.clear()
     }
 
+    override fun onDestroyView() {
+        _binding = null
+        mapPresenter.detach()
+        super.onDestroyView()
+    }
 }

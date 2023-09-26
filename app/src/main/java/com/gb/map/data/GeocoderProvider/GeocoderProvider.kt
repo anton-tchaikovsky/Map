@@ -1,4 +1,4 @@
-package com.gb.map.data
+package com.gb.map.data.GeocoderProvider
 
 import android.location.Address
 import com.google.android.gms.maps.model.LatLng

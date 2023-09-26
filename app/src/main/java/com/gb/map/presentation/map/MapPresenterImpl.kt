@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class MapPresenterImpl(private val locationRepository: LocationRepository) :
@@ -23,15 +22,9 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
 
     override fun attach(mapView: MapContract.MapView) {
         this.mapView = mapView
-        coroutineScope.launch {
-            locationRepository.getLocations().forEach {
-                this@MapPresenterImpl.mapView?.showMarker(it, false)
-            }
-        }
     }
 
     override fun detach() {
-        coroutineScope.coroutineContext.cancel()
         mapView = null
     }
 
@@ -50,7 +43,15 @@ class MapPresenterImpl(private val locationRepository: LocationRepository) :
     }
 
     override fun onMapReading() {
-        mapView?.checkPermissionLocation()
+        mapView?.run{
+            clearMap()
+            checkPermissionLocation()
+            coroutineScope.launch {
+                locationRepository.getLocations().forEach {
+                    showMarker(it, false)
+                }
+            }
+        }
     }
 
     override fun onAddMarker(latLng: LatLng) {

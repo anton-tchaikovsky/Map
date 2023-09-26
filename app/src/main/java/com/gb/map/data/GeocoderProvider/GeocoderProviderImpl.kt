@@ -1,4 +1,4 @@
-package com.gb.map.data
+package com.gb.map.data.GeocoderProvider
 
 import android.content.Context
 import android.location.Address

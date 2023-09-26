@@ -1,10 +1,10 @@
 package com.gb.map.koin
 
 import androidx.room.Room
-import com.gb.map.data.GeocoderProvider
-import com.gb.map.data.GeocoderProviderImpl
-import com.gb.map.data.LocationProvider
-import com.gb.map.data.LocationProviderImpl
+import com.gb.map.data.GeocoderProvider.GeocoderProvider
+import com.gb.map.data.GeocoderProvider.GeocoderProviderImpl
+import com.gb.map.data.LocationProvider.LocationProvider
+import com.gb.map.data.LocationProvider.LocationProviderImpl
 import com.gb.map.data.data_source.LocalDataSource
 import com.gb.map.data.data_source.LocalDataSourceImpl
 import com.gb.map.data.mapper.LocationMapper

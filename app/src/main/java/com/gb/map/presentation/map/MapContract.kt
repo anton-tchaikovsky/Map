@@ -13,6 +13,8 @@ interface MapContract {
         fun showError(message: String)
 
         fun openLocationsList()
+
+        fun clearMap()
     }
 
     interface MapPresenter{

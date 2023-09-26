@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +19,8 @@ import org.koin.core.scope.Scope
 
 abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponent,
     MapContract.MapView {
+
+    private var isLaunch = false
 
     final override val scope: Scope by fragmentScope()
 
@@ -56,31 +57,22 @@ abstract class BasePermissionLocationFragment : Fragment(), AndroidScopeComponen
                     requireActivity().finish()
                 }
             })
-
+        isLaunch = savedInstanceState==null
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mapPresenter.attach(this)
-        super.onViewCreated(view, savedInstanceState)
-    }
-
-    override fun onDestroyView() {
-        mapPresenter.detach()
-        super.onDestroyView()
     }
 
     override fun checkPermissionLocation() {
         // проверка, есть ли разрешение на чтение локации
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> mapPresenter.onPermissionLocationGrande()
-            //  запрашиваем разрешение (с Rationale) - вызывается в случае первичного отказа пользователя в разрешении на чтение локации
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> createAlertDialogRationale()
-            else -> requestPermissionsLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) // запрашиваем разрешение (без Rationale)
-        }
+            when {
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED -> mapPresenter.onPermissionLocationGrande()
+                !isLaunch -> mapPresenter.onPermissionLocationDenied()
+                //  запрашиваем разрешение (с Rationale) - вызывается в случае первичного отказа пользователя в разрешении на чтение локации
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> createAlertDialogRationale()
+                else -> requestPermissionsLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) // запрашиваем разрешение (без Rationale)
+            }
     }
 
     private fun createAlertDialogRationale() {

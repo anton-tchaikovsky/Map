@@ -1,4 +1,4 @@
-package com.gb.map.data
+package com.gb.map.data.LocationProvider
 
 import android.Manifest
 import android.content.Context
